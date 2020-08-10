@@ -44,7 +44,7 @@ func RunTasks(tasks ...Task) error {
 		if err := tasks[0].Check(); err != nil {
 			return err
 		}
-		return tasks[0].Runner(tasks[0])
+		return tasks[0].Runner(tasks[0].Receiver)
 	}
 	wg, hasErr := new(sync.WaitGroup), uint32(0)
 	wg.Add(len(tasks))
@@ -73,7 +73,7 @@ func RunFunc(tasks ...Task) error {
 		if err := tasks[0].Check(); err != nil {
 			return err
 		}
-		return tasks[0].Runner(tasks[0])
+		return tasks[0].Run()
 	}
 	wg, hasErr := new(sync.WaitGroup), uint32(0)
 	wg.Add(len(tasks))
