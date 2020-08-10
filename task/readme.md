@@ -20,6 +20,8 @@ there are two ways to use task:
 ### performance
 
 - RunFunc
-  - | BenchmarkRunFunc | 353136 | 3548 ns/op
+  - | BenchmarkRunFunc | 375003 | 3347 ns/op
 - RunTasks
-  - | BenchmarkRunTasks | 500010 | 2652 ns/op
+  - | BenchmarkRunTasks | 499987 | 2362 ns/op
+- RunErrorGroup
+  - | BenchmarkRunErrGroup | 499995 | 2674 ns/op

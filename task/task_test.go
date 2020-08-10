@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"testing"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type a struct {
@@ -28,7 +30,6 @@ type d struct {
 
 var d1 = d{A1: new(a), B1: new(b), C1: new(c), E1: make([]int, 0)}
 
-// example for use `Runner` to run tasks
 func runTasks() error {
 	return RunTasks(
 		Task{Receiver: d1.A1, Runner: func(out interface{}) error {
@@ -50,7 +51,6 @@ func runTasks() error {
 	)
 }
 
-// example for use `Func` to run tasks
 func runFunc() error {
 	return RunFunc(
 		Task{Receiver: d1.A1, Func: func() (out interface{}, err error) {
@@ -66,6 +66,27 @@ func runFunc() error {
 			return &[]int{1}, nil
 		}},
 	)
+}
+
+func runErrGroup() error {
+	g := new(errgroup.Group)
+	g.Go(func() error {
+		d1.A1 = &a{I: 1}
+		return nil
+	})
+	g.Go(func() error {
+		d1.B1 = &b{S: "b"}
+		return nil
+	})
+	g.Go(func() error {
+		d1.C1 = &c{V: &a{I: 2}}
+		return nil
+	})
+	g.Go(func() error {
+		d1.E1 = []int{1}
+		return nil
+	})
+	return g.Wait()
 }
 
 func check() {
@@ -112,5 +133,11 @@ func BenchmarkRunFunc(b *testing.B) {
 func BenchmarkRunTasks(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = runTasks()
+	}
+}
+
+func BenchmarkRunErrGroup(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = runErrGroup()
 	}
 }
