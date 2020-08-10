@@ -14,6 +14,11 @@ type Task struct {
 	Func     func() (interface{}, error)
 }
 
+// EmptyReceiver is used for func like `func(a int) error` which has only error as return value or has no return value
+// usually, multi return value func use `Func`, single or zero return value func use `Runner`
+// but if after func return and you want to pass value, maybe Runner is better
+var EmptyReceiver = uint32(0)
+
 // Check is used to check if t.receiver is ptr
 func (t Task) Check() error {
 	ty := reflect.TypeOf(t.Receiver)
