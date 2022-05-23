@@ -2,6 +2,8 @@ package task
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"reflect"
 	"sync"
 	"sync/atomic"
@@ -16,8 +18,23 @@ type Task struct {
 
 // EmptyReceiver is used for func like `func(a int) error` which has only error as return value or has no return value
 // usually, multi return value func use `Func`, single or zero return value func use `Runner`
-// but if after func return and you want to pass value, maybe Runner is better
-var EmptyReceiver = uint32(0)
+// but if after func return you want to pass value, maybe Runner is better
+var (
+	EmptyReceiver = uint32(0)
+	defaultErrOut = os.Stderr
+	errOut        io.Writer
+)
+
+func SetErrorOutput(w io.Writer) {
+	errOut = w
+}
+
+func ErrorOutput() io.Writer {
+	if errOut == nil {
+		return defaultErrOut
+	}
+	return errOut
+}
 
 // Check is used to check if t.receiver is ptr
 func (t Task) Check() error {
@@ -55,12 +72,17 @@ func RunTasks(tasks ...Task) error {
 	wg.Add(len(tasks))
 	for index := range tasks {
 		go func(t *Task, index uint32) {
+			defer func() {
+				if err := recover(); err != nil {
+					_, _ = fmt.Fprintln(ErrorOutput(), err)
+				}
+				wg.Done()
+			}()
 			if err := t.Check(); err != nil {
 				atomic.CompareAndSwapUint32(&hasErr, 0, index)
 			} else if err = t.Runner(t.Receiver); err != nil {
 				atomic.CompareAndSwapUint32(&hasErr, 0, index)
 			}
-			wg.Done()
 		}(&tasks[index], uint32(index))
 	}
 	wg.Wait()
@@ -84,10 +106,15 @@ func RunFunc(tasks ...Task) error {
 	wg.Add(len(tasks))
 	for index := range tasks {
 		go func(t *Task, index uint32) {
+			defer func() {
+				if err := recover(); err != nil {
+					_, _ = fmt.Fprintln(ErrorOutput(), err)
+				}
+				wg.Done()
+			}()
 			if err := t.Run(); err != nil {
 				atomic.CompareAndSwapUint32(&hasErr, 0, index)
 			}
-			wg.Done()
 		}(&tasks[index], uint32(index))
 	}
 	wg.Wait()

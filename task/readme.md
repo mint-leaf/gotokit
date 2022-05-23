@@ -19,9 +19,10 @@ there are two ways to use task:
 
 ### performance
 
-- RunFunc
-  - | BenchmarkRunFunc | 375003 | 3347 ns/op
-- RunTasks
-  - | BenchmarkRunTasks | 499987 | 2362 ns/op
-- RunErrorGroup
-  - | BenchmarkRunErrGroup | 499995 | 2674 ns/op
+cpu: AMD Ryzen 7 5800X 8-Core Processor
++ BenchmarkRunFunc
+    + BenchmarkRunFunc-16               616291              1724 ns/op
++ BenchmarkRunTasks
+    + BenchmarkRunTasks-16              747738              1491 ns/op
++ BenchmarkRunErrGroup
+    + BenchmarkRunErrGroup-16           799855              1382 ns/op
