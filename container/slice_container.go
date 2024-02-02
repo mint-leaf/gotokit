@@ -1,4 +1,4 @@
-package main
+package container
 
 func Filter[S ~[]T, T any](s S, fs ...func(ele T) bool) S {
 	c := make([]T, 0)

@@ -1,4 +1,4 @@
-package main
+package container
 
 import "sort"
 
@@ -41,6 +41,7 @@ func MapKeys[M ~map[K]V, S []K, K comparable, V any](m M) S {
 	index := 0
 	for k := range m {
 		c[index] = k
+		index++
 	}
 	return c
 }

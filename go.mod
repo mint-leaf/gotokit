@@ -1,5 +1,5 @@
 module gotokit
 
-go 1.17
+go 1.21.1
 
-require golang.org/x/sync v0.0.0-20220513210516-0976fa681c29
+require golang.org/x/sync v0.6.0
